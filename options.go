@@ -15,7 +15,7 @@ type Options struct {
 }
 
 var defaultOptions = Options{
-	Host: "api.github.com",
+	Host: DefaultAPIHostname,
 	TokenReader: &EnvTokenReader{
 		VarName: "GITHUB_TOKEN",
 	},
