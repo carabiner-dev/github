@@ -7,20 +7,11 @@ import (
 	"context"
 	"io"
 	"net/http"
-
-	"github.com/cli/go-gh/v2/pkg/api"
 )
 
 // Replaceable caller interface
 type Caller interface {
 	RequestWithContext(context.Context, string, string, io.Reader) (*http.Response, error)
-}
-
-func buildGithubRestClient(opts Options) (*api.RESTClient, error) {
-	return api.NewRESTClient(api.ClientOptions{
-		AuthToken: opts.Token,
-		Host:      opts.Host,
-	})
 }
 
 func NewClient() (*Client, error) {
@@ -34,13 +25,17 @@ func NewClientWithOptions(opts Options) (*Client, error) {
 	}
 
 	// Create the client
-	rclient, err := buildGithubRestClient(opts)
-	if err != nil {
-		return nil, err
+	if opts.Caller == nil {
+		rclient, err := buildGithubRestClient(opts)
+		if err != nil {
+			return nil, err
+		}
+		opts.Caller = rclient
 	}
+
 	return &Client{
 		Options: opts,
-		caller:  rclient,
+		caller:  opts.Caller,
 	}, nil
 }
 

@@ -3,4 +3,13 @@
 
 package github
 
+import "github.com/cli/go-gh/v2/pkg/api"
+
 const DefaultAPIHostname = "api.github.com"
+
+func buildGithubRestClient(opts Options) (*api.RESTClient, error) {
+	return api.NewRESTClient(api.ClientOptions{
+		AuthToken: opts.Token,
+		Host:      opts.Host,
+	})
+}
