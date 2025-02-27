@@ -14,10 +14,16 @@ type Caller interface {
 	RequestWithContext(context.Context, string, string, io.Reader) (*http.Response, error)
 }
 
-func NewClient() (*Client, error) {
-	return NewClientWithOptions(defaultOptions)
+// NewClient creates a new client. It can take any number of optional functions
+func NewClient(optFns ...fnOpt) (*Client, error) {
+	opts := defaultOptions
+	for _, fn := range optFns {
+		fn(&opts)
+	}
+	return NewClientWithOptions(opts)
 }
 
+// NewClientWithOptions creates a new client, taking a full options set.
 func NewClientWithOptions(opts Options) (*Client, error) {
 	// Ensure the client has a token to connect
 	if err := opts.ensureToken(); err != nil {
