@@ -2,7 +2,7 @@ module github.com/carabiner-dev/github
 
 go 1.23.6
 
-toolchain go1.24
+toolchain go1.24.0
 
 require (
 	github.com/cli/go-gh/v2 v2.11.2
