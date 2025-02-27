@@ -77,3 +77,14 @@ func (o *Options) ensureToken() error {
 	o.Token = token
 	return nil
 }
+
+// Validate ensures the client options are sane
+func (o *Options) Validate() error {
+	errs := []error{}
+	if o.EnsureToken {
+		if err := o.ensureToken(); err != nil {
+			errs = append(errs, err)
+		}
+	}
+	return errors.Join(errs...)
+}

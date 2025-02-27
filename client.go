@@ -26,11 +26,12 @@ func NewClient(optFns ...fnOpt) (*Client, error) {
 // NewClientWithOptions creates a new client, taking a full options set.
 func NewClientWithOptions(opts Options) (*Client, error) {
 	// Ensure the client has a token to connect
-	if err := opts.ensureToken(); err != nil {
+	if err := opts.Validate(); err != nil {
 		return nil, err
 	}
 
-	// Create the client
+	// If we didn't get a caller in the options, default
+	// to the stock github rest client.
 	if opts.Caller == nil {
 		rclient, err := buildGithubRestClient(opts)
 		if err != nil {
