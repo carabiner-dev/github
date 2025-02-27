@@ -11,7 +11,41 @@ import (
 type Options struct {
 	Host        string
 	Token       string
+	EnsureToken bool
 	TokenReader TokenReader
+	Caller      Caller
+}
+
+type fnOpt func(*Options)
+
+func WithHost(h string) fnOpt {
+	return func(opts *Options) {
+		opts.Host = h
+	}
+}
+
+func WithToken(t string) fnOpt {
+	return func(opts *Options) {
+		opts.Token = t
+	}
+}
+
+func WithEnsureToken(e bool) fnOpt {
+	return func(opts *Options) {
+		opts.EnsureToken = e
+	}
+}
+
+func WithTokenReader(r TokenReader) fnOpt {
+	return func(opts *Options) {
+		opts.TokenReader = r
+	}
+}
+
+func WithCaller(c Caller) fnOpt {
+	return func(opts *Options) {
+		opts.Caller = c
+	}
 }
 
 var defaultOptions = Options{
