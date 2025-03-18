@@ -47,6 +47,7 @@ func (nc *NativeHTTPCaller) RequestWithContext(
 	ctx context.Context, method string, endpoint string, r io.Reader,
 ) (*http.Response, error) {
 	var sendWithoutAuth bool
+	hostname := nc.Hostname
 	if strings.HasPrefix(endpoint, "https://") || strings.HasPrefix(endpoint, "http://") {
 		parsed, err := url.Parse(endpoint)
 		if err != nil {
@@ -57,9 +58,13 @@ func (nc *NativeHTTPCaller) RequestWithContext(
 		// to not leak the token
 		if parsed.Hostname() != nc.Hostname {
 			sendWithoutAuth = true
+			hostname = nc.Hostname
 		}
+		endpoint = strings.TrimPrefix(endpoint, parsed.Scheme+"://"+parsed.Host)
 	}
-	req, err := http.NewRequestWithContext(ctx, method, "https://"+nc.Hostname+"/"+strings.TrimPrefix(endpoint, "/"), r)
+
+	url := fmt.Sprintf("https://%s/%s", hostname, strings.TrimPrefix(endpoint, "/"))
+	req, err := http.NewRequestWithContext(ctx, method, url, r)
 	if err != nil {
 		return nil, fmt.Errorf("creating request: %w", err)
 	}
