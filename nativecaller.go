@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"net/url"
 	"strings"
 
 	"golang.org/x/oauth2"
@@ -45,6 +46,19 @@ type NativeHTTPCaller struct {
 func (nc *NativeHTTPCaller) RequestWithContext(
 	ctx context.Context, method string, endpoint string, r io.Reader,
 ) (*http.Response, error) {
+	var sendWithoutAuth bool
+	if strings.HasPrefix(endpoint, "https://") || strings.HasPrefix(endpoint, "http://") {
+		parsed, err := url.Parse(endpoint)
+		if err != nil {
+			return nil, fmt.Errorf("parsing redirect URL: %w", err)
+		}
+		// If we're requesting now from a different host
+		// (from a redirect), then we generate a new client
+		// to not leak the token
+		if parsed.Hostname() != nc.Hostname {
+			sendWithoutAuth = true
+		}
+	}
 	req, err := http.NewRequestWithContext(ctx, method, "https://"+nc.Hostname+"/"+strings.TrimPrefix(endpoint, "/"), r)
 	if err != nil {
 		return nil, fmt.Errorf("creating request: %w", err)
@@ -52,5 +66,23 @@ func (nc *NativeHTTPCaller) RequestWithContext(
 	req.Header.Add("Accept", "application/vnd.github+json")
 	req.Header.Add("X-GitHub-Api-Version", apiVersion)
 
-	return nc.client.Do(req)
+	var resp *http.Response
+	if sendWithoutAuth {
+		resp, err = http.DefaultClient.Do(req)
+	} else {
+		resp, err = nc.client.Do(req)
+	}
+	if err != nil {
+		return nil, err
+	}
+
+	//  If we got a redirect, then call again on the redirect target
+	if resp.StatusCode == 302 {
+		location := resp.Header.Get("location")
+		if location == "" {
+			return nil, fmt.Errorf("got a 302 redirect but no location URL")
+		}
+		return nc.RequestWithContext(ctx, method, location, r)
+	}
+	return resp, nil
 }
