@@ -81,8 +81,8 @@ func (o *Options) ensureToken() error {
 // Validate ensures the client options are sane
 func (o *Options) Validate() error {
 	errs := []error{}
-	if o.EnsureToken {
-		if err := o.ensureToken(); err != nil {
+	if err := o.ensureToken(); err != nil {
+		if o.EnsureToken {
 			errs = append(errs, err)
 		}
 	}
