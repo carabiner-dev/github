@@ -1,6 +1,6 @@
 module github.com/carabiner-dev/github
 
-go 1.23.6
+go 1.23.7
 
 toolchain go1.24.0
 
