@@ -24,6 +24,9 @@ func TestRepoFromString(t *testing.T) {
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()
+
+			_, err := NewClient()
+			require.NoError(t, err)
 			res, err := RepoFromString(tc.sut)
 			if tc.mustErr {
 				require.Error(t, err)

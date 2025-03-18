@@ -9,6 +9,8 @@ import (
 	"net/http"
 )
 
+const DefaultAPIHostname = "api.github.com"
+
 // Replaceable caller interface
 type Caller interface {
 	RequestWithContext(context.Context, string, string, io.Reader) (*http.Response, error)
@@ -32,8 +34,10 @@ func NewClientWithOptions(opts Options) (*Client, error) {
 
 	// If we didn't get a caller in the options, default
 	// to the stock github rest client.
+	var rclient Caller
+	var err error
 	if opts.Caller == nil {
-		rclient, err := buildGithubRestClient(opts)
+		rclient, err = NewNativeHTTPCaller(&opts)
 		if err != nil {
 			return nil, err
 		}

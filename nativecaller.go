@@ -43,8 +43,8 @@ type NativeHTTPCaller struct {
 
 // RequestWithContext makes a request to the server without auth
 func (nc *NativeHTTPCaller) RequestWithContext(
-	ctx context.Context, method string, endpoint string, r io.Reader) (*http.Response, error) {
-
+	ctx context.Context, method string, endpoint string, r io.Reader,
+) (*http.Response, error) {
 	req, err := http.NewRequestWithContext(ctx, method, "https://"+nc.Hostname+"/"+strings.TrimPrefix(endpoint, "/"), r)
 	if err != nil {
 		return nil, fmt.Errorf("creating request: %w", err)
