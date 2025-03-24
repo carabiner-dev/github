@@ -5,6 +5,7 @@ package github
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
@@ -18,6 +19,12 @@ const (
 	apiVersion      = "2022-11-28"
 	defaultHostname = "api.github.com"
 )
+
+type errorBody struct {
+	Message          string `json:"message"`
+	DocumentationURL string `json:"documentation_url"`
+	StatusCode       string `json:"status"`
+}
 
 func NewNativeHTTPCaller(opts *Options) (*NativeHTTPCaller, error) {
 	var client *http.Client = http.DefaultClient
@@ -83,6 +90,13 @@ func (nc *NativeHTTPCaller) RequestWithContext(
 
 	// Return an error if the server returns an HTTP error
 	if resp.StatusCode < 200 || resp.StatusCode > 399 {
+		res, err := io.ReadAll(resp.Body)
+		if err == nil {
+			eb := errorBody{}
+			if err = json.Unmarshal(res, &eb); err == nil {
+				return resp, fmt.Errorf("HTTP Error %d sending request: %s", resp.StatusCode, eb.Message)
+			}
+		}
 		return resp, fmt.Errorf("HTTP Error %d sending request", resp.StatusCode)
 	}
 
