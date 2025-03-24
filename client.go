@@ -7,6 +7,7 @@ import (
 	"context"
 	"io"
 	"net/http"
+	"strings"
 )
 
 const DefaultAPIHostname = "api.github.com"
@@ -53,6 +54,19 @@ func NewClientWithOptions(opts Options) (*Client, error) {
 type Client struct {
 	Options Options
 	caller  Caller
+}
+
+// TokenScopes returns the scopes of the token as reflected by the GitHub API.
+func (c *Client) TokenScopes() ([]string, error) {
+	resp, err := c.caller.RequestWithContext(context.Background(), http.MethodGet, "/", nil)
+	if err != nil {
+		return nil, err
+	}
+	scopesString := resp.Header.Get("X-Oauth-Scopes")
+	if scopesString == "" {
+		return []string{}, nil
+	}
+	return strings.Split(scopesString, ", "), nil
 }
 
 func (c *Client) Call(ctx context.Context, method, path string, body io.Reader) (*http.Response, error) {

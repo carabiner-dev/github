@@ -6,12 +6,30 @@ package github
 import (
 	"context"
 	"errors"
+	"fmt"
 	"io"
 	"net/http"
+	"os"
 	"testing"
 
 	"github.com/stretchr/testify/require"
 )
+
+func TestTokenScopes(t *testing.T) {
+	t.Parallel()
+	token := os.Getenv("GITHUB_TOKEN")
+	if token == "" {
+		t.Skip()
+	}
+
+	c, err := NewClient()
+	require.NoError(t, err)
+	scopes, err := c.TokenScopes()
+	require.NoError(t, err)
+	fmt.Printf("%+v\n", scopes)
+	require.NotNil(t, scopes)
+	t.Error()
+}
 
 func TestCall(t *testing.T) {
 	t.Parallel()
