@@ -81,6 +81,11 @@ func (nc *NativeHTTPCaller) RequestWithContext(
 		return nil, err
 	}
 
+	// Return an error if the server returns an HTTP error
+	if resp.StatusCode < 200 || resp.StatusCode > 399 {
+		return resp, fmt.Errorf("HTTP Error %d sending request", resp.StatusCode)
+	}
+
 	//  If we got a redirect, then call again on the redirect target
 	if resp.StatusCode == 302 {
 		location := resp.Header.Get("location")
