@@ -30,7 +30,7 @@ func (fc *FileCaller) RequestWithContext(_ context.Context, _, _ string, _ io.Re
 	}
 	return &http.Response{
 		Status:           "OK",
-		StatusCode:       200,
+		StatusCode:       http.StatusOK,
 		Body:             f,
 		ContentLength:    999,
 		TransferEncoding: []string{},

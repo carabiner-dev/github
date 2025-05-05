@@ -12,6 +12,7 @@ import (
 )
 
 func TestNCRequestWithContext(t *testing.T) {
+	t.Parallel()
 	for _, tc := range []struct {
 		name    string
 		url     string
@@ -30,7 +31,7 @@ func TestNCRequestWithContext(t *testing.T) {
 
 			res, err := nc.RequestWithContext(context.Background(), http.MethodGet, tc.url, nil)
 			require.NoError(t, err)
-			defer res.Body.Close()
+			defer res.Body.Close() //nolint:errcheck
 			require.NotNil(t, res)
 			require.Equal(t, 200, res.StatusCode)
 		})

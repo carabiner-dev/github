@@ -27,7 +27,7 @@ type errorBody struct {
 }
 
 func NewNativeHTTPCaller(opts *Options) (*NativeHTTPCaller, error) {
-	var client *http.Client = http.DefaultClient
+	var client = http.DefaultClient
 	if opts.Token != "" {
 		client = oauth2.NewClient(context.Background(), oauth2.StaticTokenSource(
 			&oauth2.Token{AccessToken: opts.Token},
@@ -70,13 +70,13 @@ func (nc *NativeHTTPCaller) RequestWithContext(
 		endpoint = strings.TrimPrefix(endpoint, parsed.Scheme+"://"+parsed.Host)
 	}
 
-	url := fmt.Sprintf("https://%s/%s", hostname, strings.TrimPrefix(endpoint, "/"))
-	req, err := http.NewRequestWithContext(ctx, method, url, r)
+	urlString := fmt.Sprintf("https://%s/%s", hostname, strings.TrimPrefix(endpoint, "/"))
+	req, err := http.NewRequestWithContext(ctx, method, urlString, r)
 	if err != nil {
 		return nil, fmt.Errorf("creating request: %w", err)
 	}
 	req.Header.Add("Accept", "application/vnd.github+json")
-	req.Header.Add("X-GitHub-Api-Version", apiVersion)
+	req.Header.Add("X-Github-Api-Version", apiVersion)
 
 	var resp *http.Response
 	if sendWithoutAuth {
@@ -101,8 +101,8 @@ func (nc *NativeHTTPCaller) RequestWithContext(
 	}
 
 	//  If we got a redirect, then call again on the redirect target
-	if resp.StatusCode == 302 {
-		location := resp.Header.Get("location")
+	if resp.StatusCode == http.StatusFound {
+		location := resp.Header.Get("Location")
 		if location == "" {
 			return nil, fmt.Errorf("got a 302 redirect but no location URL")
 		}

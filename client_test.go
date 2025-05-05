@@ -59,7 +59,7 @@ func TestCall(t *testing.T) {
 				return
 			}
 			require.NoError(t, err)
-			defer res.Body.Close()
+			defer res.Body.Close() //nolint:errcheck
 
 			data, err := io.ReadAll(res.Body)
 			require.NoError(t, err)

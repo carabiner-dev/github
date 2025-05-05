@@ -62,6 +62,8 @@ func (c *Client) TokenScopes() ([]string, error) {
 	if err != nil {
 		return nil, err
 	}
+	defer resp.Body.Close() //nolint:errcheck
+
 	scopesString := resp.Header.Get("X-Oauth-Scopes")
 	if scopesString == "" {
 		return []string{}, nil
