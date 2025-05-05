@@ -27,7 +27,7 @@ type errorBody struct {
 }
 
 func NewNativeHTTPCaller(opts *Options) (*NativeHTTPCaller, error) {
-	var client = http.DefaultClient
+	client := http.DefaultClient
 	if opts.Token != "" {
 		client = oauth2.NewClient(context.Background(), oauth2.StaticTokenSource(
 			&oauth2.Token{AccessToken: opts.Token},
