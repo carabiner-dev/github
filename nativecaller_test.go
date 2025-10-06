@@ -4,7 +4,6 @@
 package github
 
 import (
-	"context"
 	"net/http"
 	"testing"
 
@@ -29,7 +28,7 @@ func TestNCRequestWithContext(t *testing.T) {
 			})
 			require.NoError(t, err)
 
-			res, err := nc.RequestWithContext(context.Background(), http.MethodGet, tc.url, nil)
+			res, err := nc.RequestWithContext(t.Context(), http.MethodGet, tc.url, nil)
 			require.NoError(t, err)
 			defer res.Body.Close() //nolint:errcheck
 			require.NotNil(t, res)

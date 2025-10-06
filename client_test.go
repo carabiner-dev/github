@@ -4,7 +4,6 @@
 package github
 
 import (
-	"context"
 	"errors"
 	"fmt"
 	"io"
@@ -53,7 +52,7 @@ func TestCall(t *testing.T) {
 			)
 			require.NoError(t, err)
 
-			res, err := c.Call(context.Background(), http.MethodGet, "http://example.com/", nil)
+			res, err := c.Call(t.Context(), http.MethodGet, "http://example.com/", nil)
 			if tc.synthErr != nil {
 				require.Error(t, err)
 				return
