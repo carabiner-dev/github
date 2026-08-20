@@ -38,7 +38,7 @@ func TestCall(t *testing.T) {
 		synthErr error
 	}{
 		{"normal", []byte("Hi\n"), nil},
-		{"normal", nil, errors.New("Superbad HTTP Error!")},
+		{"http-error", nil, errors.New("Superbad HTTP Error!")},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()
