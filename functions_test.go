@@ -11,16 +11,17 @@ import (
 
 func TestRepoFromString(t *testing.T) {
 	t.Parallel()
+	const cosignRepoURL = "https://github.com/sigstore/cosign"
 	for _, tc := range []struct {
 		name    string
 		sut     string
 		expect  string
 		mustErr bool
 	}{
-		{"reposlug", "sigstore/cosign", "https://github.com/sigstore/cosign", false},
-		{"noscheme", "github.com/sigstore/cosign", "https://github.com/sigstore/cosign", false},
+		{"reposlug", "sigstore/cosign", cosignRepoURL, false},
+		{"noscheme", "github.com/sigstore/cosign", cosignRepoURL, false},
 		{"norepo", "github.com/sigstore", "", true},
-		{"locator", "git+https://github.com/sigstore/cosign@main", "https://github.com/sigstore/cosign", false},
+		{"locator", "git+https://github.com/sigstore/cosign@main", cosignRepoURL, false},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()
