@@ -27,7 +27,7 @@ func NewClient(optFns ...fnOpt) (*Client, error) {
 }
 
 // NewClientWithOptions creates a new client, taking a full options set.
-func NewClientWithOptions(opts Options) (*Client, error) {
+func NewClientWithOptions(opts Options) (*Client, error) { //nolint:gocritic // the client keeps its own copy of the options; by value is the API
 	// Ensure the client has a token to connect
 	if err := opts.Validate(); err != nil {
 		return nil, err
